@@ -129,6 +129,20 @@ def entropy_encode(channel: np.ndarray):
   # TODO
   pass
 
+def dpcm(inp: np.ndarray) -> np.ndarray:
+  out = inp.copy()
+  for i in range(inp.shape[0]-1):
+    dc = inp[i, ..., 0, 0]
+    out[i+1, ..., 0, 0] -= dc
+  return out
+
+def un_dpcm(inp: np.ndarray) -> np.ndarray:
+  out = inp.copy()
+  for i in range(inp.shape[0]-1):
+    dc = out[i, ..., 0, 0]
+    out[i+1, ..., 0, 0] += dc
+  return out
+
 _zigzag = (
   (0, 0),
   (0, 1), (1, 0),
