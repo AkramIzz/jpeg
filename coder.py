@@ -9,9 +9,11 @@ def encode(img_file: str) -> np.ndarray:
   blocks = blocks_split(yuv)
   coeffs = dct2d_n(blocks)
   q = quantize(coeffs, precomputed_quantization_table)
+  zz = zigzag(q)
   return q
 
-def decode(q: np.ndarray) -> np.ndarray:
+def decode(inp: np.ndarray) -> np.ndarray:
+  rq = unzigzag(inp)
   rcoeffs = dequantize(q, precomputed_quantization_table)
   rblocks = dct2d_n(rcoeffs, inverse=True)
   ryuv = de_blocks(rblocks)
