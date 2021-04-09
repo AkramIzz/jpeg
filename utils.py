@@ -177,6 +177,22 @@ _unzigzag = (
 )
 def unzigzag(inp: np.ndarray, shape=None) -> np.ndarray:
   return inp[..., _unzigzag].reshape(shape)
+
+def run_length_encode(inp):
+  # TODO
+  pass
+
+def run_length_decode(inp):
+  # TODO
+  pass
+
+def huffman_encode(inp):
+  # TODO
+  pass
+
+def huffman_decode(inp):
+  # TODO
+  pass
 #%%
 def store(img):
   # TODO
