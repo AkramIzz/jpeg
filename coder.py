@@ -14,7 +14,7 @@ def encode(img_file: str) -> np.ndarray:
   return zz
 
 def decode(inp: np.ndarray, width: int, height: int) -> np.ndarray:
-  rdc_encoded = unzigzag(inp)
+  rdc_encoded = unzigzag(inp, (*inp.shape[:-1], 8, 8))
   q = un_dpcm(rdc_encoded)
   rcoeffs = dequantize(q, precomputed_quantization_table)
   rblocks = dct2d_n(rcoeffs, inverse=True)
