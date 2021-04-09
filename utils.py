@@ -144,7 +144,9 @@ def blocks_split(inp: np.ndarray, block_dim=8) -> np.ndarray:
   # blocks, channels, width, height
   return np.moveaxis(out, 3, 1)
 # %%
-def de_blocks(inp: np.ndarray) -> np.ndarray:
-  rows = [np.concatenate(inp[i*64:(i+1)*64], axis=2) for i in range(64)]
+def de_blocks(inp: np.ndarray, width: int, height: int) -> np.ndarray:
+  B = width // 8
+  rows = [np.concatenate(inp[i*B:(i+1)*B], axis=2) for i in range(B)]
   img = np.concatenate(rows, axis=1)
+  # width, height, channels
   return np.moveaxis(img, 0, 2)
