@@ -37,6 +37,42 @@ def chroma_subsampling(yuv: np.ndarray) -> np.ndarray:
   out[:, 1::2, (1, 2)] = out[:, ::2, (1, 2)]
   return out
 #%%
+def dct1d_n(inp: np.ndarray) -> np.ndarray:
+  N = inp.shape[-2]
+  k = np.arange(N)
+  n = np.arange(N)
+  t = pi/N * (n+0.5)
+  return inp @ np.cos(np.outer(k, t)).T
+
+def inv_dct1d_n(inp: np.ndarray) -> np.ndarray:
+  N = inp.shape[-2]
+  k = np.arange(N)
+  n = np.arange(1, N)
+  t = pi/N * n
+  # The various transpose operations and the bit hacky `[0:1]` instead of `[0]`
+  # is used to support 2D arrays. The operation still operates on a 1D basis,
+  # i.e. for a 2D array the operation performs the DCT-III on each row 
+  # individually.
+  dims = len(inp.shape)
+  dims_perm = [i for i in range(dims)]
+  tr = lambda x: np.transpose(x, (*dims_perm[:-2], dims-1, dims-2))
+  dct3 = (0.5*tr(tr(inp)[..., 0:1, :])) + np.dot(tr(tr(inp)[..., 1:, :]), np.cos(np.outer(k+0.5, t)).T)
+  # inverse of DCT-II is a scaled DCT-III
+  return 2/N * dct3
+
+def dct2d_n(inp: np.ndarray, inverse=False) -> np.ndarray:
+  '''
+  Apply 2D DCT-II or 2D inverse DCT-II on `inp`
+
+    inp: multidimensional array. (inverse) DCT is applied to last two dimensions
+  '''
+  dims = len(inp.shape)
+  dims_perm = [i for i in range(dims)]
+  tr = lambda x: np.transpose(x, (*dims_perm[:-2], dims-1, dims-2))
+  if inverse:
+    return tr(inv_dct1d_n(tr(inv_dct1d_n(inp))))
+  return tr(dct1d_n(tr(dct1d_n(inp))))
+#%%
 def dct1d(inp: np.ndarray) -> np.ndarray:
   assert len(inp.shape) in [1, 2]
   N = inp.shape[0]
