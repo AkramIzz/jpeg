@@ -104,8 +104,11 @@ def blocks_split(inp: np.ndarray, block_dim=8) -> np.ndarray:
     lambda a: np.array_split(a, col_blocks_indicies, axis=1),
     np.array_split(inp, row_blocks_indicies)
   )))
-  return out.reshape(-1, *out.shape[-3:])
+  out = out.reshape(-1, *out.shape[-3:])
+  # blocks, channels, width, height
+  return np.moveaxis(out, 3, 1)
 # %%
 def de_blocks(inp: np.ndarray) -> np.ndarray:
-  # TODO
-  pass
+  rows = [np.concatenate(inp[i*64:(i+1)*64], axis=2) for i in range(64)]
+  img = np.concatenate(rows, axis=1)
+  return np.moveaxis(img, 0, 2)
